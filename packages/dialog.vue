@@ -1,0 +1,137 @@
+<template>
+  <transition name="dialog-fade">
+    <!-- 对话框的遮罩，.self代表只有点击自己才触发 -->
+    <div class="dn-dialog_wrapper" v-show="visible" @click.self="handleClose">
+      <div class="dn-dialog" :style="{ width, marginTop: top }">
+        <div class="dn-dialog_header">
+          <slot name="title">
+            <span class="dn-dialog_title">{{ title }}</span>
+          </slot>
+          <button class="dn-dialog_headerbtn" @click="handleClose">
+            <i class="dn-icon-close"></i>
+          </button>
+        </div>
+        <div class="dn-dialog_body">
+          <!-- 默认插槽 -->
+          <slot></slot>
+        </div>
+        <div class="dn-dialog_footer" v-if="$slots.footer">
+          <slot name="footer"></slot>
+        </div>
+      </div>
+    </div>
+  </transition>
+</template>
+
+<script>
+export default {
+  name: 'DnDialog',
+  props: {
+    title: {
+      type: String,
+      default: '提示'
+    },
+    width: {
+      type: String,
+      default: '50%'
+    },
+    top: {
+      type: String,
+      default: '15vh'
+    },
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {}
+  },
+  methods: {
+    handleClose () {
+      console.log('哈哈')
+      // 子组件里面不能直接做修改，外层还有引用  子组件触发了父组件的事件
+      // this.visible = false;
+      this.$emit('update:visible', false)
+    }
+  },
+  components: {}
+}
+</script>
+
+<style lang="scss">
+// scoped 会给当前组件的模板中的所有的元素都添加一个随机的属性
+// scoped 会给当前组件中所有的样式,添加一个对应的属性选择器
+.dn-dialog_wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0;
+  z-index: 2001;
+  background-color: rgba(0, 0, 0, 0.5);
+  .dn-dialog {
+    position: relative;
+    margin: 15vh auto 50px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    width: 30%;
+    &_header {
+      padding: 20px 20px 10px;
+      .dn-dialog_title {
+        line-height: 24px;
+        font-size: 18px;
+        color: #303133;
+      }
+      .dn-dialog_headerbtn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 16px;
+        .dn-icon-close {
+          color: 909399;
+        }
+      }
+    }
+    &_body {
+      padding: 30px 20px;
+      color: #606266;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    &_footer {
+      padding: 10px 20px 20px;
+      text-align: right;
+      box-sizing: border-box;
+      ::v-deep .dn-button:first-child {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+.dialog-fade-enter-active {
+  animation: fade 0.3s;
+}
+.dialog-fade-leave-active {
+  animation: fade 0.3s reverse;
+}
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
